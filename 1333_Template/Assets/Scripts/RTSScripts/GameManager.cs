@@ -7,6 +7,6 @@ public class GameManager : MonoBehaviour
 
     private void Awake()
     {
-        //gridManager.InitializeGrid(); <--- TO DO (Make this)
+        _gridManager.InitializeGrid(); 
     }
 }

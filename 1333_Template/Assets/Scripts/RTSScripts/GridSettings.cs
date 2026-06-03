@@ -4,9 +4,9 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "GridSettings", menuName = "Game/GridSettings")]
 public class GridSettings : ScriptableObject
 {
-    [SerializeField] private int _gridSizeX;
-    [SerializeField] private int _gridSizeY;
-    [SerializeField] private float _nodeSize;
+    [SerializeField] private int _gridSizeX = 10;
+    [SerializeField] private int _gridSizeY = 10;
+    [SerializeField] private float _nodeSize = 1f;
     [SerializeField] private bool _useXZPlane;
 
     public int GridSizeX => _gridSizeX;
