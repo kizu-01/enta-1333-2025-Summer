@@ -12,8 +12,6 @@ public struct GridNode
 
     // Properties used to safely access TerrainType data
     public bool Walkable => TerrainType != null && TerrainType.Walkable;
-
     public int Weight => TerrainType != null ? TerrainType.MovementCost : 1;
-
     public Color GizmoColor => TerrainType != null ? TerrainType.GizmoColor : Color.gray;
 }
