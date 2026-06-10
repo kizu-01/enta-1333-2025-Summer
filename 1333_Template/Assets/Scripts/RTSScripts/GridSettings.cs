@@ -9,6 +9,9 @@ public class GridSettings : ScriptableObject
     [SerializeField] private float _nodeSize = 1f;
     [SerializeField] private bool _useXZPlane;
 
+    // Added to allow diagonal movement in pathfinding
+    [SerializeField] private bool _allowDiagonal;
+
     public int GridSizeX => _gridSizeX;
 
     public int GridSizeY => _gridSizeY;
@@ -17,4 +20,6 @@ public class GridSettings : ScriptableObject
 
     public bool UseXZPlane => _useXZPlane;
 
+    // Expose the AllowDiagonal setting
+    public bool AllowDiagonal => _allowDiagonal;
 }

@@ -6,6 +6,14 @@ public struct GridNode
 {
     public string Name; //an index for us to keep track and organize nodes
     public Vector3 WorldPosition;
-    public bool Walkable;
-    public int Weight;
+
+    // Added for TerrainType reference
+    public TerrainType TerrainType;
+
+    // Properties used to safely access TerrainType data
+    public bool Walkable => TerrainType != null && TerrainType.Walkable;
+
+    public int Weight => TerrainType != null ? TerrainType.MovementCost : 1;
+
+    public Color GizmoColor => TerrainType != null ? TerrainType.GizmoColor : Color.gray;
 }

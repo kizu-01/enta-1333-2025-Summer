@@ -5,6 +5,7 @@ using UnityEditor;
 
 public class GridManager : MonoBehaviour
 {
+    [SerializeField] private TerrainType _defaultTerrain;
     //variable to allow us to plug in our GridSettings scriptable Object
     [SerializeField] private GridSettings _gridSettings;
     public GridSettings GridSettings => _gridSettings;
@@ -45,12 +46,12 @@ public class GridManager : MonoBehaviour
                     ? new Vector3(x, 0, y) * _gridSettings.NodeSize
                     : new Vector3(x, y, 0) * _gridSettings.NodeSize;
 
+                // Updated struct initialization to use TerrainType
                 GridNode node = new GridNode
                 {
                     Name = $"Cell_{(x + _gridSettings.GridSizeX * x + y)}",
                     WorldPosition = worldPos,
-                    Walkable = true, //Default all nodes to walkable, modified later
-                    Weight = 1 //Default weight, useful for varied terrain costs 
+                    TerrainType = _defaultTerrain //default to null, can be set later by other logic
                 };
 
                 gridNodes[x, y] = node;
@@ -72,12 +73,13 @@ public class GridManager : MonoBehaviour
             for (int y = 0; y < _gridSettings.GridSizeY; y++)
             {
                 GridNode node = gridNodes[x, y];
+
+                // Simplified for debug tracking to match new struct layout
                 AllNodes.Add(new GridNode
                 {
                     Name = $"Cell_{x}+{y}",
                     WorldPosition = node.WorldPosition,
-                    Walkable = node.Walkable,
-                    Weight = node.Weight
+                    TerrainType = node.TerrainType
                 });
             }
         }
@@ -106,14 +108,15 @@ public class GridManager : MonoBehaviour
     {
         if (gridNodes == null || GridSettings == null) return;
 
-        Gizmos.color = Color.green;
         //Draw the gridnode gizmos, size is 90% of GridNode Size for visual clarity
         for (int x = 0; x < _gridSettings.GridSizeX; x++)
         {
             for (int y = 0; y < _gridSettings.GridSizeY; y++)
             {
                 GridNode node = gridNodes[x, y];
-                Gizmos.color = node.Walkable ? Color.green : Color.red;
+
+                // Modified to use dynamic GizmoColor based on TerrainType
+                Gizmos.color = node.GizmoColor;
                 Gizmos.DrawWireCube(node.WorldPosition, Vector3.one * GridSettings.NodeSize * 0.9f);
             }
         }
