@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/1333_RTS/StudentWork/Scenes/GameScene.unity
     guid: 3f1434326b5b22a4bb5781af97b2ae5e
-  - enabled: 1
+  - enabled: 0
     path: Assets/1333_RTS/StudentWork/Scenes/SampleScene.unity
     guid: 99c9720ab356a0642a771bea13969a05
   m_configObjects:
