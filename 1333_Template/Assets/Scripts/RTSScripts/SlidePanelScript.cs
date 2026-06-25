@@ -4,37 +4,91 @@ using UnityEngine.UI;
 
 public class SlidePanelScript : MonoBehaviour
 {
-    [SerializeField] private float _openPosition;
-    [SerializeField] private float _closedPosition;
-    [SerializeField] private float _transitionDuration = 1f;
+    public enum SlideDirection { Horizontal, Vertical }
+
+    [Header("Direction Settings")]
+    [SerializeField] private SlideDirection _direction = SlideDirection.Horizontal;
+
+    [Header("Animation Timings")]
+    [SerializeField] private float _transitionDuration = 0.6f;
+    [SerializeField] private float _buttonPopDuration = 0.4f;
+
+    // Added custom ease options for flexible changes
+    [Header("Custom Easing")]
+    [SerializeField] private Ease _openEase = Ease.OutBack;
+    [SerializeField] private Ease _closeEase = Ease.InCubic;
+    [SerializeField] private Ease _buttonEase = Ease.OutBack;
+
+    private float _openPosition;
+    private float _closedPosition;
     private RectTransform rectTransform;
+    private CanvasGroup canvasGroup;
+    private Button[] _menuButtons;
 
     private void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
-        _closedPosition = -rectTransform.rect.width;
-        _openPosition = 0;
+        canvasGroup = GetComponent<CanvasGroup>();
+
+        // Find all buttons inside the panel automatically
+        _menuButtons = GetComponentsInChildren<Button>(true);
+
+        if (_direction == SlideDirection.Horizontal)
+        {
+            _closedPosition = -rectTransform.rect.width;
+            _openPosition = 0;
+        }
+        else
+        {
+            _closedPosition = rectTransform.rect.height;
+            _openPosition = 0;
+        }
     }
 
     public void Open()
     {
-        GetComponentInChildren<Button>().GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -160);
-        // slide panel in using a tween
-        rectTransform.DOAnchorPosX(_openPosition, _transitionDuration).SetEase(Ease.OutBounce).OnComplete(() => {
-            // once panel completes it slide transition, make button clickable and animate the button in
-            GetComponent<CanvasGroup>().blocksRaycasts = true;
-            GetComponentInChildren<Button>().GetComponent<RectTransform>().DOAnchorPosY(0f, 0.5f).SetEase(Ease.InQuad);
-        });
+        // Hide all buttons before panel slides down
+        foreach (var button in _menuButtons)
+        {
+            button.transform.localScale = Vector3.zero;
+        }
+
+        // Slide panel in
+        if (_direction == SlideDirection.Horizontal)
+        {
+            rectTransform.DOAnchorPosX(_openPosition, _transitionDuration).SetEase(_openEase).SetUpdate(true).OnComplete(AnimateButtonsIn);
+        }
+        else
+        {
+            rectTransform.DOAnchorPosY(_openPosition, _transitionDuration).SetEase(_openEase).SetUpdate(true).OnComplete(AnimateButtonsIn);
+        }
     }
 
     public void Close()
     {
-        // make any buttons in the panel un-clickable
-        GetComponent<CanvasGroup>().blocksRaycasts = false;
-        // slide the panel out, reset the button to its default position once the panel transition animation is complete
-        rectTransform.DOAnchorPosX(_closedPosition, _transitionDuration).SetEase(Ease.InQuad).OnComplete(() =>
+        if (canvasGroup != null) canvasGroup.blocksRaycasts = false;
+
+        if (_direction == SlideDirection.Horizontal)
         {
-            GetComponentInChildren<Button>().GetComponent<RectTransform>().anchoredPosition = new Vector2(0, -160);
-        });
+            rectTransform.DOAnchorPosX(_closedPosition, _transitionDuration).SetEase(_closeEase).SetUpdate(true);
+        }
+        else
+        {
+            rectTransform.DOAnchorPosY(_closedPosition, _transitionDuration).SetEase(_closeEase).SetUpdate(true);
+        }
+    }
+
+    private void AnimateButtonsIn()
+    {
+        if (canvasGroup != null) canvasGroup.blocksRaycasts = true;
+
+        // Smoothly show each button into existence one by one
+        for (int i = 0; i < _menuButtons.Length; i++)
+        {
+            _menuButtons[i].transform.DOScale(Vector3.one, _buttonPopDuration)
+                .SetEase(_buttonEase)
+                .SetUpdate(true)
+                .SetDelay(i * 0.1f);
+        }
     }
 }
